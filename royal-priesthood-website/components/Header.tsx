@@ -21,7 +21,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Royal Priesthood Mentorship</h1>
-          <p className="text-sm text-blue-100">April 19 - June 14, 2026</p>
+          <p className="text-sm text-blue-100">April 26 - June 21, 2026</p>
         </div>
         <nav className="flex flex-wrap gap-2">
           {navItems.map((item) => (

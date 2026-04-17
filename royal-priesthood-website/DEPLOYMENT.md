@@ -40,7 +40,11 @@ npm start
 ✅ **Weekly Guide** — Interactive carousel showing one week at a time  
 ✅ **Automatic Week Detection** — Defaults to current week based on date  
 ✅ **Mobile Responsive** — Works on all devices  
-✅ **No Database** — All data in JSON files in `/public/data/`  
+✅ **Admin Portal** — Hidden `/admin` route for secure operations  
+✅ **SQLite Admin Database** — Tracks mentors, mentees, and message history in a local SQLite file  
+✅ **Bulk SMS Tools** — Send messages to all mentors, all mentees, or a selected group  
+✅ **CSV Import/Export** — Quickly download and upload mentor/mentee contact lists in the admin portal  
+✅ **No External Database** — Public content stays in JSON files and admin data lives in local SQLite  
 
 ---
 
@@ -51,7 +55,7 @@ npm start
 git init
 git add .
 git commit -m "Initial commit: Royal Priesthood Mentorship Website"
-git remote add origin https://github.com/YOUR-USERNAME/royal-priesthood-mentorship.git
+git remote add origin https://github.com/CMFI-USA/royal-priesthood-mentorship.git
 git push -u origin main
 ```
 
@@ -94,17 +98,31 @@ royal-priesthood-website/
 │   ├── schedule/page.tsx        # 8-week calendar
 │   ├── characters/page.tsx      # Bible characters
 │   ├── weekly-guide/page.tsx    # Interactive weekly guide
+│   ├── admin/page.tsx           # Hidden admin portal
 │   ├── layout.tsx               # Main layout with Header/Footer
 │   └── globals.css              # Tailwind styles
+├── app/api/admin/
+│   ├── login/route.ts           # Admin sign-in
+│   ├── logout/route.ts          # Admin sign-out
+│   ├── state/route.ts           # Admin data snapshot
+│   ├── people/route.ts          # Add mentors and mentees
+│   ├── export/route.ts          # Export contacts to CSV
+│   ├── import/route.ts          # Import contacts from CSV
+│   └── messages/route.ts        # Bulk SMS sending and history logging
 ├── components/
 │   ├── Header.tsx               # Navigation header
 │   └── Footer.tsx               # Footer
 ├── lib/
 │   └── weekCalculator.ts        # Date calculation for current week
+│   ├── adminAuth.ts             # Cookie-based admin auth helpers
+│   ├── adminStore.ts            # SQLite people/message store
+│   ├── adminTypes.ts            # Shared portal types
+│   └── twilioMessaging.ts       # Vonage SMS integration
 ├── public/
 │   └── data/
 │       ├── weeks.json           # All 8 weeks content
 │       └── characters.json      # All 20 Bible characters
+├── .env.example                 # Required admin, SQLite, and Vonage variables
 ├── package.json
 ├── tsconfig.json
 ├── tailwind.config.ts
@@ -146,7 +164,29 @@ Edit `public/data/characters.json` — add characters with name, category, and r
 
 ## Environment Variables
 
-This site requires **no environment variables**. All data is static JSON files hosted in Vercel.
+The public site still works without extra configuration, but the `/admin` portal and SMS features require environment variables.
+
+1. Copy `.env.example` to `.env.local`
+2. Fill in your admin and Vonage values
+3. For Vercel, add the same variables in the project settings under "Environment Variables"
+
+### Required for Admin Portal
+```bash
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=Golois
+ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
+```
+
+### Required for Vonage SMS
+```bash
+VONAGE_API_KEY=your-vonage-api-key
+VONAGE_API_SECRET=your-vonage-api-secret
+VONAGE_FROM=your-vonage-sender
+```
+
+Notes:
+- SMS sending will not work until all required Vonage variables are set.
+- The admin portal is available at `/admin` and is intentionally not linked in the public navigation.
 
 ---
 
@@ -178,6 +218,12 @@ This site requires **no environment variables**. All data is static JSON files h
 - Visit Vercel dashboard to see deployment history
 - Check analytics for visitor traffic
 - Monitor build timing and edge function usage
+
+### Admin Portal Notes
+- Admin data persists in a local SQLite file (`./data/admin.sqlite` by default).
+- You can change the SQLite location with `SQLITE_DB_PATH`.
+- On serverless platforms, local filesystem persistence may still be ephemeral across instances.
+- CSV import expects rows in this format: `name,phoneNumber,type` where type is `mentor` or `mentee`.
 
 ---
 

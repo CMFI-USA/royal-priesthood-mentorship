@@ -5,13 +5,13 @@ export default function Schedule() {
 
       <section className="bg-blue-50 rounded-lg p-6 border border-blue-200">
         <p className="text-gray-700 mb-2">
-          <strong>Program Duration:</strong> April 19 - June 14, 2026
+          <strong>Program Duration:</strong> April 26 - June 21, 2026
         </p>
         <p className="text-gray-700">
-          <strong>Week 4 (May 11):</strong> Midpoint Mentor Meeting
+          <strong>Week 4 (May 18):</strong> Midpoint Mentor Meeting
         </p>
         <p className="text-gray-700">
-          <strong>June 14:</strong> End of Program Celebration (after church)
+          <strong>June 21:</strong> End of Program Celebration (after church)
         </p>
       </section>
 
@@ -29,50 +29,50 @@ export default function Schedule() {
             <tr className="border-b hover:bg-blue-50">
               <td className="px-4 py-3 font-bold text-blue-600">1</td>
               <td className="px-4 py-3">Origin</td>
-              <td className="px-4 py-3">Mon, Apr 20</td>
-              <td className="px-4 py-3">Apr 19 - Apr 25</td>
-            </tr>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">2</td>
-              <td className="px-4 py-3">Design</td>
               <td className="px-4 py-3">Mon, Apr 27</td>
               <td className="px-4 py-3">Apr 26 - May 2</td>
             </tr>
             <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">3</td>
-              <td className="px-4 py-3">Belonging</td>
+              <td className="px-4 py-3 font-bold text-blue-600">2</td>
+              <td className="px-4 py-3">Design</td>
               <td className="px-4 py-3">Mon, May 4</td>
               <td className="px-4 py-3">May 3 - May 9</td>
+            </tr>
+            <tr className="border-b hover:bg-blue-50">
+              <td className="px-4 py-3 font-bold text-blue-600">3</td>
+              <td className="px-4 py-3">Belonging</td>
+              <td className="px-4 py-3">Mon, May 11</td>
+              <td className="px-4 py-3">May 10 - May 16</td>
             </tr>
             <tr className="border-b bg-amber-50 hover:bg-amber-100">
               <td className="px-4 py-3 font-bold text-amber-600">4 ⭐</td>
               <td className="px-4 py-3 font-bold">Purpose</td>
-              <td className="px-4 py-3 font-bold">Mon, May 11 (Mentor Meeting)</td>
-              <td className="px-4 py-3">May 10 - May 16</td>
+              <td className="px-4 py-3 font-bold">Mon, May 18 (Mentor Meeting)</td>
+              <td className="px-4 py-3">May 17 - May 23</td>
             </tr>
             <tr className="border-b hover:bg-blue-50">
               <td className="px-4 py-3 font-bold text-blue-600">5</td>
               <td className="px-4 py-3">Character</td>
-              <td className="px-4 py-3">Mon, May 18</td>
-              <td className="px-4 py-3">May 17 - May 23</td>
-            </tr>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">6</td>
-              <td className="px-4 py-3">Redemption</td>
               <td className="px-4 py-3">Mon, May 25</td>
               <td className="px-4 py-3">May 24 - May 30</td>
             </tr>
             <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">7</td>
-              <td className="px-4 py-3">Community</td>
+              <td className="px-4 py-3 font-bold text-blue-600">6</td>
+              <td className="px-4 py-3">Redemption</td>
               <td className="px-4 py-3">Mon, Jun 1</td>
               <td className="px-4 py-3">May 31 - Jun 6</td>
+            </tr>
+            <tr className="border-b hover:bg-blue-50">
+              <td className="px-4 py-3 font-bold text-blue-600">7</td>
+              <td className="px-4 py-3">Community</td>
+              <td className="px-4 py-3">Mon, Jun 8</td>
+              <td className="px-4 py-3">Jun 7 - Jun 13</td>
             </tr>
             <tr className="bg-green-50 hover:bg-green-100">
               <td className="px-4 py-3 font-bold text-green-600">8 🎉</td>
               <td className="px-4 py-3 font-bold">Commission</td>
-              <td className="px-4 py-3 font-bold">Mon, Jun 8</td>
-              <td className="px-4 py-3">Jun 7 - Jun 14</td>
+              <td className="px-4 py-3 font-bold">Mon, Jun 15</td>
+              <td className="px-4 py-3">Jun 14 - Jun 21</td>
             </tr>
           </tbody>
         </table>
@@ -82,7 +82,7 @@ export default function Schedule() {
         <h2 className="text-2xl font-bold text-blue-600 mb-4">Key Milestone Dates</h2>
         <div className="space-y-3">
           <div className="flex items-start">
-            <span className="font-bold text-blue-600 mr-4 min-w-fit">📍 April 19</span>
+            <span className="font-bold text-blue-600 mr-4 min-w-fit">📍 April 26</span>
             <span className="text-gray-700">Program Launch on Sunday morning</span>
           </div>
           <div className="flex items-start">
@@ -92,11 +92,11 @@ export default function Schedule() {
             </span>
           </div>
           <div className="flex items-start">
-            <span className="font-bold text-amber-600 mr-4 min-w-fit">⭐ May 11</span>
+            <span className="font-bold text-amber-600 mr-4 min-w-fit">⭐ May 18</span>
             <span className="text-gray-700">Midpoint Mentor Meeting (all mentors gather)</span>
           </div>
           <div className="flex items-start">
-            <span className="font-bold text-green-600 mr-4 min-w-fit">🎉 June 14</span>
+            <span className="font-bold text-green-600 mr-4 min-w-fit">🎉 June 21</span>
             <span className="text-gray-700">
               End of Program Celebration and reflection (after church service)
             </span>
