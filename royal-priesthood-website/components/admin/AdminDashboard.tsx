@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 import { AdminStateSnapshot, Person, RecipientMode } from '@/lib/adminTypes';
 
+type PeopleSortField = 'name' | 'phoneNumber' | 'type';
+
 const EMPTY_STATE: AdminStateSnapshot = {
   people: [],
   messageHistory: [],
@@ -12,6 +14,7 @@ const EMPTY_STATE: AdminStateSnapshot = {
     configured: false,
     missing: [],
   },
+  currentUserName: '',
 };
 
 function formatDate(value: string): string {
@@ -26,10 +29,15 @@ export default function AdminDashboard() {
   const [snapshot, setSnapshot] = useState<AdminStateSnapshot>(EMPTY_STATE);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingPerson, setIsAddingPerson] = useState(false);
+  const [isDeletingPersonId, setIsDeletingPersonId] = useState<string | null>(null);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [isImportingPeople, setIsImportingPeople] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [peopleSearchTerm, setPeopleSearchTerm] = useState('');
+  const [peopleRoleFilter, setPeopleRoleFilter] = useState<'all' | Person['type']>('all');
+  const [peopleSortField, setPeopleSortField] = useState<PeopleSortField>('name');
+  const [peopleSortDirection, setPeopleSortDirection] = useState<'asc' | 'desc'>('asc');
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const [personForm, setPersonForm] = useState({
     name: '',
@@ -71,6 +79,24 @@ export default function AdminDashboard() {
       })
       .slice(0, 100);
   }, [snapshot.people, recipientSearchTerm]);
+  const visiblePeople = useMemo(() => {
+    const normalizedSearch = peopleSearchTerm.trim().toLowerCase();
+    const filtered = snapshot.people.filter((person) => {
+      const matchesRole = peopleRoleFilter === 'all' || person.type === peopleRoleFilter;
+      const matchesSearch =
+        normalizedSearch.length === 0 ||
+        `${person.name} ${person.phoneNumber} ${person.type}`.toLowerCase().includes(normalizedSearch);
+
+      return matchesRole && matchesSearch;
+    });
+
+    return filtered.sort((left, right) => {
+      const leftValue = String(left[peopleSortField]).toLowerCase();
+      const rightValue = String(right[peopleSortField]).toLowerCase();
+      const comparison = leftValue.localeCompare(rightValue);
+      return peopleSortDirection === 'asc' ? comparison : -comparison;
+    });
+  }, [peopleRoleFilter, peopleSearchTerm, peopleSortDirection, peopleSortField, snapshot.people]);
 
   async function loadState() {
     setIsLoading(true);
@@ -106,6 +132,15 @@ export default function AdminDashboard() {
 
   async function handleAddPerson(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const normalizedName = personForm.name.trim();
+    const normalizedPhoneNumber = personForm.phoneNumber.trim();
+
+    if (!normalizedName || !normalizedPhoneNumber) {
+      setFeedback(null);
+      setError('Name and phone number are required.');
+      return;
+    }
+
     setIsAddingPerson(true);
     setFeedback(null);
     setError(null);
@@ -116,7 +151,11 @@ export default function AdminDashboard() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(personForm),
+        body: JSON.stringify({
+          ...personForm,
+          name: normalizedName,
+          phoneNumber: normalizedPhoneNumber,
+        }),
       });
       const payload = await response.json();
 
@@ -127,7 +166,7 @@ export default function AdminDashboard() {
 
       setSnapshot(payload.data);
       setPersonForm({ name: '', phoneNumber: '', type: 'mentee' });
-      setFeedback('Person saved to the SQLite database.');
+      setFeedback('Person added successfully.');
     } catch {
       setError('Unable to add person right now.');
     } finally {
@@ -137,6 +176,12 @@ export default function AdminDashboard() {
 
   async function handleSendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!messageForm.message.trim()) {
+      setFeedback(null);
+      setError('Message is required.');
+      return;
+    }
 
     if (!snapshot.twilio.configured) {
       setError(`SMS provider is not configured. Missing: ${snapshot.twilio.missing.join(', ')}`);
@@ -241,15 +286,60 @@ export default function AdminDashboard() {
     setSelectedRecipientIds((current) => current.filter((value) => value !== personId));
   }
 
+  async function handleDeletePerson(person: Person) {
+    const confirmed = window.confirm(`Delete ${person.name}? This will also remove their message history.`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeletingPersonId(person.id);
+    setFeedback(null);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/admin/people', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ personId: person.id }),
+      });
+      const payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        setError(payload.error ?? 'Unable to delete person.');
+        return;
+      }
+
+      setSnapshot(payload.data);
+      setFeedback(`${person.name} deleted successfully.`);
+    } catch {
+      setError('Unable to delete person right now.');
+    } finally {
+      setIsDeletingPersonId(null);
+    }
+  }
+
+  function handleSortChange(field: PeopleSortField) {
+    if (peopleSortField === field) {
+      setPeopleSortDirection((current) => (current === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setPeopleSortField(field);
+    setPeopleSortDirection('asc');
+  }
+
   return (
     <div className="space-y-8">
       <section className="rounded-3xl bg-slate-950 px-8 py-10 text-white shadow-2xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-blue-200">Admin Portal</p>
-            <h1 className="mt-3 text-4xl font-bold">Mentorship Operations</h1>
+            <h1 className="mt-3 text-4xl font-bold">Welcome back, {snapshot.currentUserName || 'Admin'}</h1>
             <p className="mt-4 max-w-2xl text-sm text-slate-300">
-              Manage the SQLite contact list, send SMS to mentors or mentees, and track message history.
+              Manage contacts, send bulk SMS to mentors or mentees, and track message history.
             </p>
           </div>
 
@@ -293,117 +383,179 @@ export default function AdminDashboard() {
           <p className="mt-2 text-3xl font-bold text-slate-900">{mentees.length}</p>
         </article>
         <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Messages Logged</p>
+          <p className="text-sm text-slate-500">Messages Sent</p>
           <p className="mt-2 text-3xl font-bold text-slate-900">{snapshot.messageHistory.length}</p>
         </article>
       </section>
 
-      <section className="grid gap-8 xl:grid-cols-[1.05fr_1.4fr]">
-        <form onSubmit={handleAddPerson} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-slate-900">Add Person</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Use E.164 phone format, for example +15551234567.
-          </p>
-
-          <div className="mt-6 space-y-4">
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-slate-700">Name</span>
-              <input
-                value={personForm.name}
-                onChange={(event) => setPersonForm((current) => ({ ...current, name: event.target.value }))}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500"
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-slate-700">Phone Number</span>
-              <input
-                value={personForm.phoneNumber}
-                onChange={(event) =>
-                  setPersonForm((current) => ({ ...current, phoneNumber: event.target.value }))
-                }
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500"
-                placeholder="+15551234567"
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-slate-700">Role</span>
-              <select
-                value={personForm.type}
-                onChange={(event) =>
-                  setPersonForm((current) => ({
-                    ...current,
-                    type: event.target.value as Person['type'],
-                  }))
-                }
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500"
-              >
-                <option value="mentee">Mentee</option>
-                <option value="mentor">Mentor</option>
-              </select>
-            </label>
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900">People</h2>
+            <p className="mt-1 text-sm text-slate-600">Use E.164 phone format, e.g. +15551234567.</p>
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href="/api/admin/export"
+              className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Export CSV
+            </a>
+            <button
+              type="button"
+              onClick={() => importInputRef.current?.click()}
+              disabled={isImportingPeople}
+              className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isImportingPeople ? 'Importing...' : 'Import CSV'}
+            </button>
+            <button
+              type="button"
+              onClick={loadState}
+              className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={isAddingPerson}
-            className="mt-6 w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-          >
-            {isAddingPerson ? 'Saving...' : 'Add to Admin Database'}
-          </button>
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".csv,text/csv"
+          onChange={handleImportPeople}
+          className="hidden"
+        />
+
+        {/* Add Person form */}
+        <form onSubmit={handleAddPerson} className="mt-6 rounded-2xl border border-slate-200 p-4">
+          <p className="mb-4 text-sm font-semibold text-slate-700">Add Person</p>
+          <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto_auto]">
+            <input
+              value={personForm.name}
+              onChange={(event) => setPersonForm((current) => ({ ...current, name: event.target.value }))}
+              placeholder="Full name"
+              className="rounded-2xl border border-slate-200 px-4 py-2 text-sm outline-none transition focus:border-blue-500"
+              required
+            />
+            <input
+              value={personForm.phoneNumber}
+              onChange={(event) => setPersonForm((current) => ({ ...current, phoneNumber: event.target.value }))}
+              placeholder="+15551234567"
+              className="rounded-2xl border border-slate-200 px-4 py-2 text-sm outline-none transition focus:border-blue-500"
+              required
+            />
+            <select
+              value={personForm.type}
+              onChange={(event) =>
+                setPersonForm((current) => ({ ...current, type: event.target.value as Person['type'] }))
+              }
+              className="rounded-2xl border border-slate-200 px-4 py-2 text-sm outline-none transition focus:border-blue-500"
+            >
+              <option value="mentee">Mentee</option>
+              <option value="mentor">Mentor</option>
+            </select>
+            <button
+              type="submit"
+              disabled={isAddingPerson}
+              className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+            >
+              {isAddingPerson ? 'Saving...' : 'Add Person'}
+            </button>
+          </div>
         </form>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900">People</h2>
-              <p className="mt-2 text-sm text-slate-600">Separate mentor and mentee lists with phone numbers.</p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <a
-                href="/api/admin/export"
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                Export CSV
-              </a>
+        {/* People table */}
+        {isLoading ? (
+          <p className="mt-6 text-sm text-slate-500">Loading...</p>
+        ) : snapshot.people.length === 0 ? (
+          <p className="mt-6 text-sm text-slate-500">No people added yet.</p>
+        ) : (
+          <div className="mt-6 space-y-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <input
+                value={peopleSearchTerm}
+                onChange={(event) => setPeopleSearchTerm(event.target.value)}
+                placeholder="Search by name, phone, or role"
+                className="w-full max-w-md rounded-2xl border border-slate-200 px-4 py-2 text-sm outline-none transition focus:border-blue-500"
+              />
 
-              <button
-                type="button"
-                onClick={() => importInputRef.current?.click()}
-                disabled={isImportingPeople}
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isImportingPeople ? 'Importing...' : 'Import CSV'}
-              </button>
-
-              <button
-                type="button"
-                onClick={loadState}
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-              >
-                Refresh
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500">Filter</span>
+                <select
+                  value={peopleRoleFilter}
+                  onChange={(event) => setPeopleRoleFilter(event.target.value as 'all' | Person['type'])}
+                  className="rounded-2xl border border-slate-200 px-4 py-2 text-sm outline-none transition focus:border-blue-500"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="mentor">Mentors</option>
+                  <option value="mentee">Mentees</option>
+                </select>
+              </div>
             </div>
+
+            <div className="overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                    <button type="button" onClick={() => handleSortChange('name')} className="inline-flex items-center gap-1">
+                      Name
+                      {peopleSortField === 'name' ? (peopleSortDirection === 'asc' ? '↑' : '↓') : null}
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                    <button type="button" onClick={() => handleSortChange('phoneNumber')} className="inline-flex items-center gap-1">
+                      Phone
+                      {peopleSortField === 'phoneNumber' ? (peopleSortDirection === 'asc' ? '↑' : '↓') : null}
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-left font-semibold text-slate-700">
+                    <button type="button" onClick={() => handleSortChange('type')} className="inline-flex items-center gap-1">
+                      Role
+                      {peopleSortField === 'type' ? (peopleSortDirection === 'asc' ? '↑' : '↓') : null}
+                    </button>
+                  </th>
+                  <th className="px-4 py-3 text-right font-semibold text-slate-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {visiblePeople.map((person) => (
+                  <tr key={person.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-medium text-slate-900">{person.name}</td>
+                    <td className="px-4 py-3 text-slate-600">{person.phoneNumber}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                          person.type === 'mentor'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-emerald-100 text-emerald-700'
+                        }`}
+                      >
+                        {person.type === 'mentor' ? 'Mentor' : 'Mentee'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => handleDeletePerson(person)}
+                        disabled={isDeletingPersonId === person.id}
+                        className="rounded-2xl border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {isDeletingPersonId === person.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            </div>
+
+            {visiblePeople.length === 0 ? (
+              <p className="text-sm text-slate-500">No people match the current filter.</p>
+            ) : null}
           </div>
-
-          <input
-            ref={importInputRef}
-            type="file"
-            accept=".csv,text/csv"
-            onChange={handleImportPeople}
-            className="hidden"
-          />
-
-          {isLoading ? (
-            <p className="mt-6 text-sm text-slate-500">Loading people...</p>
-          ) : (
-            <div className="mt-6 grid gap-6 md:grid-cols-2">
-              <PersonList title="Mentors" people={mentors} emptyText="No mentors added yet." />
-              <PersonList title="Mentees" people={mentees} emptyText="No mentees added yet." />
-            </div>
-          )}
-        </div>
+        )}
       </section>
 
       <section>
@@ -425,7 +577,7 @@ export default function AdminDashboard() {
 
             <fieldset>
               <legend className="mb-3 text-sm font-medium text-slate-700">Recipients</legend>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-4">
                 <RecipientModeButton
                   label="All Mentees"
                   selected={messageForm.recipientMode === 'all-mentees'}
@@ -435,6 +587,11 @@ export default function AdminDashboard() {
                   label="All Mentors"
                   selected={messageForm.recipientMode === 'all-mentors'}
                   onClick={() => setMessageForm((current) => ({ ...current, recipientMode: 'all-mentors' }))}
+                />
+                <RecipientModeButton
+                  label="All (Everyone)"
+                  selected={messageForm.recipientMode === 'all'}
+                  onClick={() => setMessageForm((current) => ({ ...current, recipientMode: 'all' }))}
                 />
                 <RecipientModeButton
                   label="Specific Group"
@@ -517,7 +674,46 @@ export default function AdminDashboard() {
                 rows={6}
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-blue-500"
                 placeholder="Write the message to send..."
+                required
               />
+              {(() => {
+                const len = messageForm.message.length;
+                const smsPerRecipient = len === 0 ? 1 : Math.ceil(len / 160);
+                const recipientCount =
+                  messageForm.recipientMode === 'all-mentees'
+                    ? snapshot.people.filter((p) => p.type === 'mentee').length
+                    : messageForm.recipientMode === 'all-mentors'
+                      ? snapshot.people.filter((p) => p.type === 'mentor').length
+                      : messageForm.recipientMode === 'all'
+                        ? snapshot.people.length
+                        : selectedRecipientIds.length;
+                const totalSms = smsPerRecipient * recipientCount;
+                const charsInSegment = len === 0 ? 0 : len % 160 === 0 ? 160 : len % 160;
+                const charsRemaining = 160 - charsInSegment;
+                return (
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                    <span>
+                      <span className={len > 0 && charsRemaining <= 20 ? 'font-semibold text-amber-600' : ''}>
+                        {len} character{len !== 1 ? 's' : ''}
+                      </span>
+                      {' · '}
+                      <span className={smsPerRecipient > 1 ? 'font-semibold text-amber-600' : ''}>
+                        {smsPerRecipient} SMS segment{smsPerRecipient !== 1 ? 's' : ''} per recipient
+                      </span>
+                      {len > 0 && (
+                        <span className="ml-1 text-slate-400">
+                          ({charsRemaining} char{charsRemaining !== 1 ? 's' : ''} left in current segment)
+                        </span>
+                      )}
+                    </span>
+                    {recipientCount > 0 && len > 0 && (
+                      <span className="font-semibold text-blue-600">
+                        {totalSms} total SMS to send ({recipientCount} recipient{recipientCount !== 1 ? 's' : ''})
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
             </label>
           </div>
 
@@ -534,84 +730,84 @@ export default function AdminDashboard() {
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-2xl font-bold text-slate-900">Message History</h2>
         <p className="mt-2 text-sm text-slate-600">
-          Every outbound message attempt is logged in SQLite with recipient and status.
+          Outbound messages grouped by send batch.
         </p>
 
         {snapshot.messageHistory.length === 0 ? (
           <p className="mt-6 text-sm text-slate-500">No messages have been sent yet.</p>
-        ) : (
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
-              <thead className="bg-slate-50">
-                <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Date</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Recipient</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Role</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Author</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Status</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Message</th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700">Provider ID</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
-                {snapshot.messageHistory.map((entry) => (
-                  <tr key={entry.id} className="align-top">
-                    <td className="px-4 py-3 text-slate-600">{formatDate(entry.dateSent)}</td>
-                    <td className="px-4 py-3">
-                      <p className="font-semibold text-slate-900">{entry.recipientName}</p>
-                      <p className="text-xs text-slate-500">{entry.recipientPhoneNumber}</p>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">{entry.recipientType}</td>
-                    <td className="px-4 py-3 text-slate-600">{entry.author}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-semibold ${
-                          entry.status === 'sent'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-red-100 text-red-700'
-                        }`}
-                      >
-                        {entry.status}
-                      </span>
-                      {entry.error ? <p className="mt-2 text-xs text-red-600">{entry.error}</p> : null}
-                    </td>
-                    <td className="px-4 py-3 text-slate-700">{entry.message}</td>
-                    <td className="px-4 py-3 text-slate-500">{entry.twilioSid ?? '-'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </div>
-  );
-}
+        ) : (() => {
+          // Group entries by (dateSent, author, message) — same bulk send shares these
+          type BatchKey = string;
+          const batchMap = new Map<BatchKey, typeof snapshot.messageHistory>();
+          for (const entry of snapshot.messageHistory) {
+            const key: BatchKey = `${entry.dateSent}__${entry.author}__${entry.message}`;
+            if (!batchMap.has(key)) batchMap.set(key, []);
+            batchMap.get(key)!.push(entry);
+          }
+          const batches = Array.from(batchMap.values());
 
-function PersonList({
-  title,
-  people,
-  emptyText,
-}: {
-  title: string;
-  people: Person[];
-  emptyText: string;
-}) {
-  return (
-    <div className="rounded-3xl bg-slate-50 p-4">
-      <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-      {people.length === 0 ? (
-        <p className="mt-4 text-sm text-slate-500">{emptyText}</p>
-      ) : (
-        <div className="mt-4 space-y-3">
-          {people.map((person) => (
-            <article key={person.id} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-              <p className="font-semibold text-slate-900">{person.name}</p>
-              <p className="mt-1 text-sm text-slate-600">{person.phoneNumber}</p>
-            </article>
-          ))}
-        </div>
-      )}
+          function recipientLabel(entries: typeof snapshot.messageHistory): string {
+            const allMentors = snapshot.people.filter((p) => p.type === 'mentor').map((p) => p.id);
+            const allMentees = snapshot.people.filter((p) => p.type === 'mentee').map((p) => p.id);
+            const ids = entries.map((e) => e.recipientId);
+            const idSet = new Set(ids);
+            const isAllMentors = allMentors.length > 0 && allMentors.every((id) => idSet.has(id)) && ids.length === allMentors.length;
+            const isAllMentees = allMentees.length > 0 && allMentees.every((id) => idSet.has(id)) && ids.length === allMentees.length;
+            const isAll = snapshot.people.length > 0 && snapshot.people.every((p) => idSet.has(p.id)) && ids.length === snapshot.people.length;
+            if (isAll) return 'All (Everyone)';
+            if (isAllMentors) return 'All Mentors';
+            if (isAllMentees) return 'All Mentees';
+            if (ids.length === 1) return entries[0].recipientName;
+            return entries.map((e) => e.recipientName).join(', ');
+          }
+
+          return (
+            <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
+              <table className="min-w-full divide-y divide-slate-200 text-sm">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-700">Date</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-700">Recipients</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-700">Author</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-700">Status</th>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-700">Message</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {batches.map((entries, index) => {
+                    const first = entries[0];
+                    const sentCount = entries.filter((e) => e.status === 'sent').length;
+                    const failCount = entries.length - sentCount;
+                    return (
+                      <tr key={index} className="align-top hover:bg-slate-50">
+                        <td className="px-4 py-3 text-slate-600 whitespace-nowrap">{formatDate(first.dateSent)}</td>
+                        <td className="px-4 py-3">
+                          <p className="font-medium text-slate-900">{recipientLabel(entries)}</p>
+                          <p className="mt-1 text-xs text-slate-500">{entries.length} recipient{entries.length !== 1 ? 's' : ''}</p>
+                        </td>
+                        <td className="px-4 py-3 text-slate-600">{first.author}</td>
+                        <td className="px-4 py-3">
+                          {sentCount > 0 && (
+                            <span className="mr-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">
+                              {sentCount} sent
+                            </span>
+                          )}
+                          {failCount > 0 && (
+                            <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-700">
+                              {failCount} failed
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 max-w-xs">{first.message}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
+      </section>
     </div>
   );
 }

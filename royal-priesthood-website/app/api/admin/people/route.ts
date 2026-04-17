@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 
-import { isAdminAuthenticated } from '@/lib/adminAuth';
-import { addPerson, findPersonByPhoneNumber, listMessageHistory, listPeople } from '@/lib/adminStore';
+import { getCurrentAdminUser, isAdminAuthenticated } from '@/lib/adminAuth';
+import {
+  addPerson,
+  deletePerson,
+  findPersonByPhoneNumber,
+  listMessageHistory,
+  listPeople,
+} from '@/lib/adminStore';
 import { PersonType } from '@/lib/adminTypes';
 import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
 
@@ -46,6 +52,7 @@ export async function POST(request: Request) {
   }
 
   await addPerson({ name, phoneNumber, type });
+  const currentUser = await getCurrentAdminUser();
 
   return NextResponse.json({
     ok: true,
@@ -53,6 +60,33 @@ export async function POST(request: Request) {
       people: await listPeople(),
       messageHistory: await listMessageHistory(),
       twilio: getTwilioConfigStatus(),
+      currentUserName: currentUser?.name ?? 'Admin',
+    },
+  });
+}
+
+export async function DELETE(request: Request) {
+  if (!await isAdminAuthenticated()) {
+    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const body = await request.json();
+  const personId = String(body.personId ?? '').trim();
+
+  if (!personId) {
+    return NextResponse.json({ ok: false, error: 'Person id is required.' }, { status: 400 });
+  }
+
+  await deletePerson(personId);
+  const currentUser = await getCurrentAdminUser();
+
+  return NextResponse.json({
+    ok: true,
+    data: {
+      people: await listPeople(),
+      messageHistory: await listMessageHistory(),
+      twilio: getTwilioConfigStatus(),
+      currentUserName: currentUser?.name ?? 'Admin',
     },
   });
 }

@@ -33,7 +33,7 @@ export type MessageHistoryEntry = {
   error?: string;
 };
 
-export type RecipientMode = 'all-mentees' | 'all-mentors' | 'selected';
+export type RecipientMode = 'all-mentees' | 'all-mentors' | 'all' | 'selected';
 
 export type TwilioConfigStatus = {
   configured: boolean;
@@ -44,4 +44,5 @@ export type AdminStateSnapshot = {
   people: Person[];
   messageHistory: MessageHistoryEntry[];
   twilio: TwilioConfigStatus;
+  currentUserName: string;
 };

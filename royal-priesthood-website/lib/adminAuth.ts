@@ -71,6 +71,23 @@ export async function isAdminAuthenticated(): Promise<boolean> {
   return false;
 }
 
+export async function getCurrentAdminUser(): Promise<{ username: string; name: string; email: string } | null> {
+  const sessionValue = cookies().get(ADMIN_SESSION_COOKIE)?.value;
+
+  if (!sessionValue) return null;
+
+  const users = await listAdminUsers();
+
+  for (const user of users) {
+    const expected = createSessionValue(user.username, user.passwordHash);
+    if (safeEqual(sessionValue, expected)) {
+      return { username: user.username, name: user.name, email: user.email };
+    }
+  }
+
+  return null;
+}
+
 export function attachAdminSessionToken(response: NextResponse, sessionToken: string): NextResponse {
   response.cookies.set(ADMIN_SESSION_COOKIE, sessionToken, getCookieOptions());
   return response;

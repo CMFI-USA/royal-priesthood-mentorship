@@ -167,6 +167,21 @@ export async function addPerson(input: {
   return person;
 }
 
+export async function deletePerson(personId: string): Promise<void> {
+  await ensureInitialized();
+  const client = getClient();
+
+  await client.execute({
+    sql: `DELETE FROM message_history WHERE recipient_id = ?`,
+    args: [personId],
+  });
+
+  await client.execute({
+    sql: `DELETE FROM people WHERE id = ?`,
+    args: [personId],
+  });
+}
+
 export async function upsertPerson(input: {
   name: string;
   phoneNumber: string;
@@ -206,6 +221,7 @@ export async function findPersonByPhoneNumber(phoneNumber: string): Promise<Pers
 export async function getRecipients(mode: RecipientMode, selectedRecipientIds: string[] = []): Promise<Person[]> {
   if (mode === 'all-mentees') return listPeople('mentee');
   if (mode === 'all-mentors') return listPeople('mentor');
+  if (mode === 'all') return listPeople();
   if (selectedRecipientIds.length === 0) return [];
 
   await ensureInitialized();

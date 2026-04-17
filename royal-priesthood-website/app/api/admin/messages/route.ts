@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { isAdminAuthenticated } from '@/lib/adminAuth';
+import { getCurrentAdminUser, isAdminAuthenticated } from '@/lib/adminAuth';
 import { addMessageHistory, getRecipients, listMessageHistory, listPeople } from '@/lib/adminStore';
 import { RecipientMode } from '@/lib/adminTypes';
 import { getTwilioConfigStatus, sendSmsMessage } from '@/lib/twilioMessaging';
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: 'Message is required.' }, { status: 400 });
   }
 
-  if (!recipientMode || !['all-mentees', 'all-mentors', 'selected'].includes(recipientMode)) {
+  if (!recipientMode || !['all-mentees', 'all-mentors', 'all', 'selected'].includes(recipientMode)) {
     return NextResponse.json({ ok: false, error: 'Recipient mode is invalid.' }, { status: 400 });
   }
 
@@ -89,6 +89,7 @@ export async function POST(request: Request) {
   const successCount = historyEntries.filter((entry) => entry.status === 'sent').length;
   const failureCount = historyEntries.length - successCount;
   const responseStatus = 200;
+  const currentUser = await getCurrentAdminUser();
 
   return NextResponse.json(
     {
@@ -102,6 +103,7 @@ export async function POST(request: Request) {
         people: await listPeople(),
         messageHistory: await listMessageHistory(),
         twilio: getTwilioConfigStatus(),
+        currentUserName: currentUser?.name ?? 'Admin',
       },
     },
     { status: responseStatus },

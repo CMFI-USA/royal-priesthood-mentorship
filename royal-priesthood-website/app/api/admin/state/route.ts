@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { isAdminAuthenticated } from '@/lib/adminAuth';
+import { getCurrentAdminUser, isAdminAuthenticated } from '@/lib/adminAuth';
 import { listMessageHistory, listPeople } from '@/lib/adminStore';
 import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
 
@@ -11,12 +11,15 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
+  const currentUser = await getCurrentAdminUser();
+
   return NextResponse.json({
     ok: true,
     data: {
       people: await listPeople(),
       messageHistory: await listMessageHistory(),
       twilio: getTwilioConfigStatus(),
+      currentUserName: currentUser?.name ?? 'Admin',
     },
   });
 }

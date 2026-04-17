@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { isAdminAuthenticated } from '@/lib/adminAuth';
+import { getCurrentAdminUser, isAdminAuthenticated } from '@/lib/adminAuth';
 import { listMessageHistory, listPeople, upsertPerson } from '@/lib/adminStore';
 import { PersonType } from '@/lib/adminTypes';
 import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
@@ -144,6 +144,7 @@ export async function POST(request: Request) {
       people: await listPeople(),
       messageHistory: await listMessageHistory(),
       twilio: getTwilioConfigStatus(),
+      currentUserName: (await getCurrentAdminUser())?.name ?? 'Admin',
     },
   });
 }
