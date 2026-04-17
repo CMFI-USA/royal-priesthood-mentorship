@@ -1,0 +1,24 @@
+{
+  "characters": [
+    {"name": "Joseph", "category": "Chosen Through Suffering", "references": "Genesis 37 – 50"},
+    {"name": "Esther", "category": "Called for Such a Time as This", "references": "Book of Esther"},
+    {"name": "Jeremiah", "category": "Called Before Birth", "references": "Jeremiah 1, 20, 29"},
+    {"name": "Gideon", "category": "Mighty When You Feel the Least", "references": "Judges 6 – 8"},
+    {"name": "Moses", "category": "Delivered to Be a Deliverer", "references": "Exodus 1 – 20"},
+    {"name": "Ruth", "category": "Loyalty and New Identity", "references": "Book of Ruth"},
+    {"name": "Rahab", "category": "Redeemed — Not Your Past", "references": "Joshua 2, 6; Hebrews 11:31"},
+    {"name": "Mephibosheth", "category": "Restored to the Table", "references": "2 Samuel 9"},
+    {"name": "Daniel", "category": "Uncompromised Under Pressure", "references": "Book of Daniel"},
+    {"name": "Shadrach, Meshach & Abednego", "category": "Identity That Cannot Be Burned", "references": "Daniel 3"},
+    {"name": "David (young)", "category": "Anointed Before Anyone Believed It", "references": "1 Samuel 16 – 17; Psalms 23, 139"},
+    {"name": "Mary", "category": "Surrendered Identity", "references": "Luke 1 – 2; John 19"},
+    {"name": "Paul", "category": "Transformed — Old Man, New Man", "references": "Acts 9; Philippians 3; Galatians 2"},
+    {"name": "Peter", "category": "Restored After Failure", "references": "Matthew 14 – 16; John 21; Acts 2"},
+    {"name": "Zacchaeus", "category": "Seen and Transformed", "references": "Luke 19:1-10"},
+    {"name": "Nehemiah", "category": "Builder Identity", "references": "Book of Nehemiah"},
+    {"name": "Joshua", "category": "Be Strong and Courageous", "references": "Joshua 1, 3 – 4, 24"},
+    {"name": "Deborah", "category": "Calling Without Apology", "references": "Judges 4 – 5"},
+    {"name": "Solomon (young)", "category": "Wisdom as Identity", "references": "1 Kings 3; Proverbs 1 – 4; Ecclesiastes 12"},
+    {"name": "John the Beloved", "category": "The One Jesus Loved", "references": "John 13, 19 – 20; 1 John 3 – 4"}
+  ]
+}
