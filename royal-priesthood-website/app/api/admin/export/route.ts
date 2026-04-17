@@ -14,11 +14,11 @@ function escapeCsv(value: string): string {
 }
 
 export async function GET() {
-  if (!isAdminAuthenticated()) {
+  if (!await isAdminAuthenticated()) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const rows = listPeople();
+  const rows = await listPeople();
   const csvLines = [
     'name,phoneNumber,type',
     ...rows.map((row) => `${escapeCsv(row.name)},${escapeCsv(row.phoneNumber)},${row.type}`),

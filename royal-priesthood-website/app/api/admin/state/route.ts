@@ -7,15 +7,15 @@ import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  if (!isAdminAuthenticated()) {
+  if (!await isAdminAuthenticated()) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   return NextResponse.json({
     ok: true,
     data: {
-      people: listPeople(),
-      messageHistory: listMessageHistory(),
+      people: await listPeople(),
+      messageHistory: await listMessageHistory(),
       twilio: getTwilioConfigStatus(),
     },
   });

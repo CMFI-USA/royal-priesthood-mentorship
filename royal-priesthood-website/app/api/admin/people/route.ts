@@ -8,7 +8,7 @@ import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
 const PHONE_NUMBER_PATTERN = /^\+[1-9]\d{7,14}$/;
 
 export async function POST(request: Request) {
-  if (!isAdminAuthenticated()) {
+  if (!await isAdminAuthenticated()) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -38,20 +38,20 @@ export async function POST(request: Request) {
     );
   }
 
-  if (findPersonByPhoneNumber(phoneNumber)) {
+  if (await findPersonByPhoneNumber(phoneNumber)) {
     return NextResponse.json(
       { ok: false, error: 'A person with this phone number already exists.' },
       { status: 409 },
     );
   }
 
-  addPerson({ name, phoneNumber, type });
+  await addPerson({ name, phoneNumber, type });
 
   return NextResponse.json({
     ok: true,
     data: {
-      people: listPeople(),
-      messageHistory: listMessageHistory(),
+      people: await listPeople(),
+      messageHistory: await listMessageHistory(),
       twilio: getTwilioConfigStatus(),
     },
   });

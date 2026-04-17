@@ -2,23 +2,17 @@ import { createHash, timingSafeEqual } from 'crypto';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
+import { findAdminUserByUsername, hashPassword, listAdminUsers } from '@/lib/adminStore';
+
 export const ADMIN_SESSION_COOKIE = 'royal_priesthood_admin_session';
 
-function getAdminUsername(): string {
-  return process.env.ADMIN_USERNAME ?? 'admin';
-}
-
-function getAdminPassword(): string {
-  return process.env.ADMIN_PASSWORD ?? 'Golois';
-}
-
 function getSessionSecret(): string {
-  return process.env.ADMIN_SESSION_SECRET ?? `${getAdminUsername()}:${getAdminPassword()}:royal-priesthood`;
+  return process.env.ADMIN_SESSION_SECRET ?? 'royal-priesthood-fallback-secret';
 }
 
-function createSessionValue(): string {
+function createSessionValue(username: string, passwordHash: string): string {
   return createHash('sha256')
-    .update(`${getAdminUsername()}:${getAdminPassword()}:${getSessionSecret()}`)
+    .update(`${username}:${passwordHash}:${getSessionSecret()}`)
     .digest('hex');
 }
 
@@ -43,25 +37,42 @@ function getCookieOptions() {
   };
 }
 
-export function validateAdminCredentials(username: string, password: string): boolean {
-  return safeEqual(username, getAdminUsername()) && safeEqual(password, getAdminPassword());
-}
+export async function validateAdminCredentials(
+  username: string,
+  password: string,
+): Promise<{ valid: boolean; sessionToken?: string }> {
+  const user = await findAdminUserByUsername(username);
 
-export function isAdminSessionValueValid(sessionValue: string | undefined): boolean {
-  if (!sessionValue) {
-    return false;
+  if (!user) {
+    return { valid: false };
   }
 
-  return safeEqual(sessionValue, createSessionValue());
+  const inputHash = hashPassword(password);
+
+  if (!safeEqual(inputHash, user.passwordHash)) {
+    return { valid: false };
+  }
+
+  return { valid: true, sessionToken: createSessionValue(user.username, user.passwordHash) };
 }
 
-export function isAdminAuthenticated(): boolean {
+export async function isAdminAuthenticated(): Promise<boolean> {
   const sessionValue = cookies().get(ADMIN_SESSION_COOKIE)?.value;
-  return isAdminSessionValueValid(sessionValue);
+
+  if (!sessionValue) return false;
+
+  const users = await listAdminUsers();
+
+  for (const user of users) {
+    const expected = createSessionValue(user.username, user.passwordHash);
+    if (safeEqual(sessionValue, expected)) return true;
+  }
+
+  return false;
 }
 
-export function attachAdminSession(response: NextResponse): NextResponse {
-  response.cookies.set(ADMIN_SESSION_COOKIE, createSessionValue(), getCookieOptions());
+export function attachAdminSessionToken(response: NextResponse, sessionToken: string): NextResponse {
+  response.cookies.set(ADMIN_SESSION_COOKIE, sessionToken, getCookieOptions());
   return response;
 }
 

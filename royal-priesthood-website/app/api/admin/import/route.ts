@@ -63,7 +63,7 @@ function normalizeHeader(value: string): string {
 }
 
 export async function POST(request: Request) {
-  if (!isAdminAuthenticated()) {
+  if (!await isAdminAuthenticated()) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
       continue;
     }
 
-    const { created } = upsertPerson({
+    const { created } = await upsertPerson({
       name,
       phoneNumber: normalizedPhoneNumber,
       type: typeValue as PersonType,
@@ -141,8 +141,8 @@ export async function POST(request: Request) {
       processedRows: Math.max(lines.length - startIndex, 0),
     },
     data: {
-      people: listPeople(),
-      messageHistory: listMessageHistory(),
+      people: await listPeople(),
+      messageHistory: await listMessageHistory(),
       twilio: getTwilioConfigStatus(),
     },
   });

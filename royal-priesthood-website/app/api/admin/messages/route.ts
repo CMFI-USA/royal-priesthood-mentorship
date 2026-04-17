@@ -6,7 +6,7 @@ import { RecipientMode } from '@/lib/adminTypes';
 import { getTwilioConfigStatus, sendSmsMessage } from '@/lib/twilioMessaging';
 
 export async function POST(request: Request) {
-  if (!isAdminAuthenticated()) {
+  if (!await isAdminAuthenticated()) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const recipients = getRecipients(recipientMode, selectedRecipientIds);
+  const recipients = await getRecipients(recipientMode, selectedRecipientIds);
 
   if (recipients.length === 0) {
     return NextResponse.json(
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     }),
   );
 
-  const historyEntries = addMessageHistory(deliveries);
+  const historyEntries = await addMessageHistory(deliveries);
   const successCount = historyEntries.filter((entry) => entry.status === 'sent').length;
   const failureCount = historyEntries.length - successCount;
   const responseStatus = 200;
@@ -99,8 +99,8 @@ export async function POST(request: Request) {
         failureCount,
       },
       data: {
-        people: listPeople(),
-        messageHistory: listMessageHistory(),
+        people: await listPeople(),
+        messageHistory: await listMessageHistory(),
         twilio: getTwilioConfigStatus(),
       },
     },

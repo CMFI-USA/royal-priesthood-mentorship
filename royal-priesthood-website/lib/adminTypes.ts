@@ -1,5 +1,14 @@
 export type PersonType = 'mentor' | 'mentee';
 
+export type AdminUser = {
+  id: string;
+  username: string;
+  email: string;
+  name: string;
+  passwordHash: string;
+  createdAt: string;
+};
+
 export type Person = {
   id: string;
   name: string;

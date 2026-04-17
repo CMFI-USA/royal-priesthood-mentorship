@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { attachAdminSession, validateAdminCredentials } from '@/lib/adminAuth';
+import { attachAdminSessionToken, validateAdminCredentials } from '@/lib/adminAuth';
 
 export async function POST(request: Request) {
   const contentType = request.headers.get('content-type') ?? '';
@@ -17,12 +17,14 @@ export async function POST(request: Request) {
     password = String(formData.get('password') ?? '');
   }
 
-  if (!validateAdminCredentials(username, password)) {
+  const result = await validateAdminCredentials(username, password);
+
+  if (!result.valid || !result.sessionToken) {
     return NextResponse.json(
       { ok: false, error: 'Invalid username or password.' },
       { status: 401 },
     );
   }
 
-  return attachAdminSession(NextResponse.json({ ok: true }));
+  return attachAdminSessionToken(NextResponse.json({ ok: true }), result.sessionToken);
 }
