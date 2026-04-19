@@ -1,3 +1,80 @@
+const scheduleRows = [
+  {
+    week: '0',
+    weekColor: 'text-slate-700',
+    rowClassName: 'border-slate-200 bg-slate-50 hover:bg-slate-100',
+    theme: 'Kickoff Activities',
+    mondayCheckIn: 'Thu, Apr 23 / Sun, Apr 26 Launch',
+    dates: 'Apr 23 - Apr 26',
+  },
+  {
+    week: '1',
+    weekColor: 'text-blue-600',
+    rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
+    theme: 'Origin',
+    mondayCheckIn: 'Mon, Apr 27',
+    dates: 'Apr 26 - May 2',
+  },
+  {
+    week: '2',
+    weekColor: 'text-blue-600',
+    rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
+    theme: 'Design',
+    mondayCheckIn: 'Mon, May 4',
+    dates: 'May 3 - May 9',
+  },
+  {
+    week: '3',
+    weekColor: 'text-blue-600',
+    rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
+    theme: 'Belonging',
+    mondayCheckIn: 'Mon, May 11',
+    dates: 'May 10 - May 16',
+  },
+  {
+    week: '4 ⭐',
+    weekColor: 'text-amber-600',
+    rowClassName: 'border-amber-200 bg-amber-50 hover:bg-amber-100',
+    theme: 'Purpose',
+    mondayCheckIn: 'Mon, May 18 (Mentor Meeting)',
+    dates: 'May 17 - May 23',
+    emphasis: true,
+  },
+  {
+    week: '5',
+    weekColor: 'text-blue-600',
+    rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
+    theme: 'Character',
+    mondayCheckIn: 'Mon, May 25',
+    dates: 'May 24 - May 30',
+  },
+  {
+    week: '6',
+    weekColor: 'text-blue-600',
+    rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
+    theme: 'Redemption',
+    mondayCheckIn: 'Mon, Jun 1',
+    dates: 'May 31 - Jun 6',
+  },
+  {
+    week: '7',
+    weekColor: 'text-blue-600',
+    rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
+    theme: 'Community',
+    mondayCheckIn: 'Mon, Jun 8',
+    dates: 'Jun 7 - Jun 13',
+  },
+  {
+    week: '8 🎉',
+    weekColor: 'text-green-600',
+    rowClassName: 'border-green-200 bg-green-50 hover:bg-green-100',
+    theme: 'Commission',
+    mondayCheckIn: 'Mon, Jun 15',
+    dates: 'Jun 14 - Jun 21',
+    emphasis: true,
+  },
+];
+
 export default function Schedule() {
   return (
     <div className="space-y-6">
@@ -7,6 +84,10 @@ export default function Schedule() {
         <p className="text-gray-700 mb-2">
           <strong>Program Duration:</strong> April 26 - June 21, 2026
         </p>
+        <p className="text-gray-700 mb-2">
+          <strong>Week 0 (April 23-26):</strong> Kickoff activities for mentors, parents, and
+          mentees
+        </p>
         <p className="text-gray-700">
           <strong>Week 4 (May 18):</strong> Midpoint Mentor Meeting
         </p>
@@ -15,7 +96,35 @@ export default function Schedule() {
         </p>
       </section>
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="space-y-4 md:hidden">
+        {scheduleRows.map((row) => (
+          <article
+            key={row.week}
+            className={`rounded-lg border p-4 shadow-sm ${row.rowClassName}`}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className={`text-lg font-bold ${row.weekColor}`}>Week {row.week}</p>
+                <p className={`mt-1 text-lg ${row.emphasis ? 'font-bold text-slate-900' : 'font-semibold text-slate-900'}`}>
+                  {row.theme}
+                </p>
+              </div>
+              <p className="text-right text-sm font-medium text-slate-700">{row.dates}</p>
+            </div>
+
+            <div className="mt-4 space-y-2 text-sm text-slate-700">
+              <div>
+                <span className="font-semibold text-slate-900">Check-In:</span> {row.mondayCheckIn}
+              </div>
+              <div>
+                <span className="font-semibold text-slate-900">Dates:</span> {row.dates}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-lg border border-gray-200 bg-white md:block">
         <table className="w-full">
           <thead className="bg-blue-600 text-white">
             <tr>
@@ -26,54 +135,16 @@ export default function Schedule() {
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">1</td>
-              <td className="px-4 py-3">Origin</td>
-              <td className="px-4 py-3">Mon, Apr 27</td>
-              <td className="px-4 py-3">Apr 26 - May 2</td>
-            </tr>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">2</td>
-              <td className="px-4 py-3">Design</td>
-              <td className="px-4 py-3">Mon, May 4</td>
-              <td className="px-4 py-3">May 3 - May 9</td>
-            </tr>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">3</td>
-              <td className="px-4 py-3">Belonging</td>
-              <td className="px-4 py-3">Mon, May 11</td>
-              <td className="px-4 py-3">May 10 - May 16</td>
-            </tr>
-            <tr className="border-b bg-amber-50 hover:bg-amber-100">
-              <td className="px-4 py-3 font-bold text-amber-600">4 ⭐</td>
-              <td className="px-4 py-3 font-bold">Purpose</td>
-              <td className="px-4 py-3 font-bold">Mon, May 18 (Mentor Meeting)</td>
-              <td className="px-4 py-3">May 17 - May 23</td>
-            </tr>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">5</td>
-              <td className="px-4 py-3">Character</td>
-              <td className="px-4 py-3">Mon, May 25</td>
-              <td className="px-4 py-3">May 24 - May 30</td>
-            </tr>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">6</td>
-              <td className="px-4 py-3">Redemption</td>
-              <td className="px-4 py-3">Mon, Jun 1</td>
-              <td className="px-4 py-3">May 31 - Jun 6</td>
-            </tr>
-            <tr className="border-b hover:bg-blue-50">
-              <td className="px-4 py-3 font-bold text-blue-600">7</td>
-              <td className="px-4 py-3">Community</td>
-              <td className="px-4 py-3">Mon, Jun 8</td>
-              <td className="px-4 py-3">Jun 7 - Jun 13</td>
-            </tr>
-            <tr className="bg-green-50 hover:bg-green-100">
-              <td className="px-4 py-3 font-bold text-green-600">8 🎉</td>
-              <td className="px-4 py-3 font-bold">Commission</td>
-              <td className="px-4 py-3 font-bold">Mon, Jun 15</td>
-              <td className="px-4 py-3">Jun 14 - Jun 21</td>
-            </tr>
+            {scheduleRows.map((row) => (
+              <tr key={row.week} className={`border-b ${row.rowClassName}`}>
+                <td className={`px-4 py-3 font-bold ${row.weekColor}`}>{row.week}</td>
+                <td className={`px-4 py-3 text-slate-900 ${row.emphasis ? 'font-bold' : ''}`}>{row.theme}</td>
+                <td className={`px-4 py-3 text-slate-700 ${row.emphasis ? 'font-bold' : ''}`}>
+                  {row.mondayCheckIn}
+                </td>
+                <td className="px-4 py-3 text-slate-700">{row.dates}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -82,8 +153,12 @@ export default function Schedule() {
         <h2 className="text-2xl font-bold text-blue-600 mb-4">Key Milestone Dates</h2>
         <div className="space-y-3">
           <div className="flex items-start">
+            <span className="font-bold text-slate-700 mr-4 min-w-fit">🧭 April 23</span>
+            <span className="text-gray-700">Week 0 Zoom meeting with all mentors and parents at 8pm</span>
+          </div>
+          <div className="flex items-start">
             <span className="font-bold text-blue-600 mr-4 min-w-fit">📍 April 26</span>
-            <span className="text-gray-700">Program Launch on Sunday morning</span>
+            <span className="text-gray-700">Official launch at church with mentor and mentee introduction</span>
           </div>
           <div className="flex items-start">
             <span className="font-bold text-blue-600 mr-4 min-w-fit">💬 Every Monday</span>

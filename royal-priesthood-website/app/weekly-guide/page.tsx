@@ -204,13 +204,6 @@ export default function WeeklyGuide() {
               </div>
             ))}
           </div>
-          <div className="mt-4 bg-white border-2 border-gray-300 p-4 rounded-lg">
-            <p className="font-semibold text-gray-700 mb-2">Your Prayer Notes:</p>
-            <textarea
-              placeholder="Write prayer requests here that you want to remember..."
-              className="w-full h-24 p-3 border border-gray-300 rounded resize-none text-gray-700"
-            ></textarea>
-          </div>
         </section>
 
         {/* Follow-up Note */}

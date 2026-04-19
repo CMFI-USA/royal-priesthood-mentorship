@@ -7,6 +7,13 @@ export default function Structure() {
         <h2 className="text-2xl font-bold text-blue-900 mb-4">Core Framework</h2>
         <div className="space-y-3">
           <div>
+            <p className="font-bold text-blue-900">🚀 Week 0 Kickoff</p>
+            <p className="text-gray-700">
+              Thursday, April 23 at 8pm Zoom meeting with mentors and parents, followed by the
+              Sunday, April 26 church launch and mentor-mentee introduction
+            </p>
+          </div>
+          <div>
             <p className="font-bold text-blue-900">📋 Mentee-Mentor Matching</p>
             <p className="text-gray-700">Each mentee is assigned one mentor (1:1 relationship)</p>
           </div>
@@ -89,8 +96,17 @@ export default function Structure() {
         <h2 className="text-2xl font-bold text-blue-600 mb-4">Mentor Checkpoints</h2>
         <div className="space-y-3">
           <div>
-            <p className="font-bold text-blue-900">🔹 Beginning of Program</p>
-            <p className="text-gray-700">Mentors meet for orientation and vision alignment</p>
+            <p className="font-bold text-blue-900">🔹 Week 0 Kickoff</p>
+            <p className="text-gray-700">
+              Thursday, April 23 at 8pm mentors and parents meet via Zoom for orientation and
+              vision alignment
+            </p>
+          </div>
+          <div>
+            <p className="font-bold text-blue-900">🔹 Official Launch</p>
+            <p className="text-gray-700">
+              Sunday, April 26 mentors and mentees are introduced at church as the program begins
+            </p>
           </div>
           <div>
             <p className="font-bold text-blue-900">🔹 Midpoint (Week 4)</p>
@@ -99,7 +115,7 @@ export default function Structure() {
             </p>
           </div>
           <div>
-            <p className="font-bold text-blue-900">🔹 End of Program (June 14)</p>
+            <p className="font-bold text-blue-900">🔹 End of Program (June 21)</p>
             <p className="text-gray-700">
               Celebration, testimonies, and next steps for ongoing mentorship
             </p>
