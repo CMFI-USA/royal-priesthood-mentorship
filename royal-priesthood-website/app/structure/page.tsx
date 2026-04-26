@@ -10,7 +10,7 @@ export default function Structure() {
             <p className="font-bold text-blue-900">🚀 Week 0 Kickoff</p>
             <p className="text-gray-700">
               Thursday, April 23 at 8pm Zoom meeting with mentors and parents, followed by the
-              Sunday, April 26 church launch and mentor-mentee introduction
+              Sunday, May 3 church launch and mentor-mentee introduction
             </p>
           </div>
           <div>
@@ -105,7 +105,7 @@ export default function Structure() {
           <div>
             <p className="font-bold text-blue-900">🔹 Official Launch</p>
             <p className="text-gray-700">
-              Sunday, April 26 mentors and mentees are introduced at church as the program begins
+              Sunday, May 3 mentors and mentees are introduced at church as the program begins
             </p>
           </div>
           <div>

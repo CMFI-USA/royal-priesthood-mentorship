@@ -1,8 +1,8 @@
 // Utility to calculate which week we're currently in
-// Program starts April 26, 2026 (Sunday) and runs through June 21, 2026
+// Program starts May 3, 2026 (Monday) and runs through June 27, 2026
 
 export function getCurrentWeek(): number {
-  const programStart = new Date(2026, 3, 26); // April 26, 2026 (0-indexed months)
+  const programStart = new Date(2026, 4, 3); // May 3, 2026 (0-indexed months)
   const today = new Date();
   
   // Calculate days since program start
@@ -20,7 +20,7 @@ export function getCurrentWeek(): number {
 }
 
 export function getWeekStartDate(week: number): string {
-  const programStart = new Date(2026, 3, 26);
+  const programStart = new Date(2026, 4, 3);
   const weekStart = new Date(programStart);
   weekStart.setDate(weekStart.getDate() + (week - 1) * 7);
   

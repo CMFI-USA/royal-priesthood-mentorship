@@ -33,7 +33,7 @@ export default function Home() {
           📍 Current Week: Week {currentWeek}
         </h2>
         <p className="text-amber-800">
-          You're viewing the program for April 26 - June 21. Use the
+          You're viewing the program for May 3 - June 27. Use the
           navigation above to explore different sections of the program.
         </p>
       </section>
@@ -46,7 +46,7 @@ export default function Home() {
             Zoom
           </p>
           <p>
-            <strong>Sunday, April 26:</strong> Official launch at church with mentor and mentee
+            <strong>Sunday, May 3:</strong> Official launch at church with mentor and mentee
             introduction
           </p>
         </div>
@@ -123,7 +123,7 @@ export default function Home() {
         <h2 className="text-2xl font-bold text-blue-900 mb-4">Program Overview</h2>
         <ul className="space-y-2 text-gray-700">
           <li>✓ <strong>Kickoff:</strong> Week 0 activities begin Thursday, April 23, 2026</li>
-          <li>✓ <strong>Duration:</strong> 8 weeks (April 26 - June 21, 2026)</li>
+          <li>✓ <strong>Duration:</strong> 8 weeks (May 3 - June 27, 2026)</li>
           <li>✓ <strong>Age:</strong> 13-25 years old</li>
           <li>✓ <strong>Format:</strong> 1:1 mentorship with accountability squads</li>
           <li>✓ <strong>Meeting:</strong> Minimum 1 hour per week + Monday check-ins</li>

@@ -4,40 +4,40 @@ const scheduleRows = [
     weekColor: 'text-slate-700',
     rowClassName: 'border-slate-200 bg-slate-50 hover:bg-slate-100',
     theme: 'Kickoff Activities',
-    mondayCheckIn: 'Thu, Apr 23 / Sun, Apr 26 Launch',
-    dates: 'Apr 23 - Apr 26',
+    mondayCheckIn: 'Thu, Apr 23 / Sun, May 3 Launch',
+    dates: 'Apr 23 / May 3',
   },
   {
     week: '1',
     weekColor: 'text-blue-600',
     rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
     theme: 'Origin',
-    mondayCheckIn: 'Mon, Apr 27',
-    dates: 'Apr 26 - May 2',
+    mondayCheckIn: 'Mon, May 3',
+    dates: 'May 3 - May 9',
   },
   {
     week: '2',
     weekColor: 'text-blue-600',
     rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
     theme: 'Design',
-    mondayCheckIn: 'Mon, May 4',
-    dates: 'May 3 - May 9',
+    mondayCheckIn: 'Mon, May 10',
+    dates: 'May 10 - May 16',
   },
   {
     week: '3',
     weekColor: 'text-blue-600',
     rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
     theme: 'Belonging',
-    mondayCheckIn: 'Mon, May 11',
-    dates: 'May 10 - May 16',
+    mondayCheckIn: 'Mon, May 17',
+    dates: 'May 17 - May 23',
   },
   {
     week: '4 ⭐',
     weekColor: 'text-amber-600',
     rowClassName: 'border-amber-200 bg-amber-50 hover:bg-amber-100',
     theme: 'Purpose',
-    mondayCheckIn: 'Mon, May 18 (Mentor Meeting)',
-    dates: 'May 17 - May 23',
+    mondayCheckIn: 'Mon, May 24 (Mentor Meeting)',
+    dates: 'May 24 - May 30',
     emphasis: true,
   },
   {
@@ -45,32 +45,32 @@ const scheduleRows = [
     weekColor: 'text-blue-600',
     rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
     theme: 'Character',
-    mondayCheckIn: 'Mon, May 25',
-    dates: 'May 24 - May 30',
+    mondayCheckIn: 'Mon, May 31',
+    dates: 'May 31 - Jun 6',
   },
   {
     week: '6',
     weekColor: 'text-blue-600',
     rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
     theme: 'Redemption',
-    mondayCheckIn: 'Mon, Jun 1',
-    dates: 'May 31 - Jun 6',
+    mondayCheckIn: 'Mon, Jun 7',
+    dates: 'Jun 7 - Jun 13',
   },
   {
     week: '7',
     weekColor: 'text-blue-600',
     rowClassName: 'border-slate-200 bg-white hover:bg-blue-50',
     theme: 'Community',
-    mondayCheckIn: 'Mon, Jun 8',
-    dates: 'Jun 7 - Jun 13',
+    mondayCheckIn: 'Mon, Jun 14',
+    dates: 'Jun 14 - Jun 20',
   },
   {
     week: '8 🎉',
     weekColor: 'text-green-600',
     rowClassName: 'border-green-200 bg-green-50 hover:bg-green-100',
     theme: 'Commission',
-    mondayCheckIn: 'Mon, Jun 15',
-    dates: 'Jun 14 - Jun 21',
+    mondayCheckIn: 'Mon, Jun 21',
+    dates: 'Jun 21 - Jun 27',
     emphasis: true,
   },
 ];
@@ -82,17 +82,17 @@ export default function Schedule() {
 
       <section className="bg-blue-50 rounded-lg p-6 border border-blue-200">
         <p className="text-gray-700 mb-2">
-          <strong>Program Duration:</strong> April 26 - June 21, 2026
+          <strong>Program Duration:</strong> May 3 - June 27, 2026
         </p>
         <p className="text-gray-700 mb-2">
-          <strong>Week 0 (April 23-26):</strong> Kickoff activities for mentors, parents, and
+          <strong>Week 0 (Apr 23 / May 3):</strong> Kickoff activities for mentors, parents, and
           mentees
         </p>
         <p className="text-gray-700">
-          <strong>Week 4 (May 18):</strong> Midpoint Mentor Meeting
+          <strong>Week 4 (May 24):</strong> Midpoint Mentor Meeting
         </p>
         <p className="text-gray-700">
-          <strong>June 21:</strong> End of Program Celebration (after church)
+          <strong>June 27:</strong> End of Program Celebration (after church)
         </p>
       </section>
 
@@ -157,7 +157,7 @@ export default function Schedule() {
             <span className="text-gray-700">Week 0 Zoom meeting with all mentors and parents at 8pm</span>
           </div>
           <div className="flex items-start">
-            <span className="font-bold text-blue-600 mr-4 min-w-fit">📍 April 26</span>
+            <span className="font-bold text-blue-600 mr-4 min-w-fit">📍 May 3</span>
             <span className="text-gray-700">Official launch at church with mentor and mentee introduction</span>
           </div>
           <div className="flex items-start">
@@ -167,11 +167,11 @@ export default function Schedule() {
             </span>
           </div>
           <div className="flex items-start">
-            <span className="font-bold text-amber-600 mr-4 min-w-fit">⭐ May 18</span>
+            <span className="font-bold text-amber-600 mr-4 min-w-fit">⭐ May 24</span>
             <span className="text-gray-700">Midpoint Mentor Meeting (all mentors gather)</span>
           </div>
           <div className="flex items-start">
-            <span className="font-bold text-green-600 mr-4 min-w-fit">🎉 June 21</span>
+            <span className="font-bold text-green-600 mr-4 min-w-fit">🎉 June 27</span>
             <span className="text-gray-700">
               End of Program Celebration and reflection (after church service)
             </span>
