@@ -4,8 +4,8 @@ const scheduleRows = [
     weekColor: 'text-slate-700',
     rowClassName: 'border-slate-200 bg-slate-50 hover:bg-slate-100',
     theme: 'Kickoff Activities',
-    mondayCheckIn: 'Thu, Apr 23 / Sun, May 3 Launch',
-    dates: 'Apr 23 / May 3',
+    mondayCheckIn: 'Tue, Apr 28 / Sun, May 3 Launch',
+    dates: 'Apr 28 / May 3',
   },
   {
     week: '1',
@@ -85,14 +85,14 @@ export default function Schedule() {
           <strong>Program Duration:</strong> May 3 - June 27, 2026
         </p>
         <p className="text-gray-700 mb-2">
-          <strong>Week 0 (Apr 23 / May 3):</strong> Kickoff activities for mentors, parents, and
+          <strong>Week 0 (Apr 28 / May 3):</strong> Kickoff activities for mentors, parents, and
           mentees
         </p>
         <p className="text-gray-700">
           <strong>Week 4 (May 24):</strong> Midpoint Mentor Meeting
         </p>
         <p className="text-gray-700">
-          <strong>June 27:</strong> End of Program Celebration (after church)
+          <strong>June 20 or 27:</strong> End of Program Celebration (after church)
         </p>
       </section>
 
