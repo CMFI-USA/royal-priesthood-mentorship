@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getCurrentAdminUser, isAdminAuthenticated } from '@/lib/adminAuth';
 import { addMessageHistory, getRecipients, listMessageHistory, listPeople } from '@/lib/adminStore';
 import { RecipientMode } from '@/lib/adminTypes';
-import { getTwilioConfigStatus, sendSmsMessage } from '@/lib/twilioMessaging';
+import { getMailchimpConfigStatus, sendSmsMessage } from '@/lib/mailchimpMessaging';
 
 export async function POST(request: Request) {
   if (!await isAdminAuthenticated()) {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: 'Recipient mode is invalid.' }, { status: 400 });
   }
 
-  const providerStatus = getTwilioConfigStatus();
+  const providerStatus = getMailchimpConfigStatus();
 
   if (!providerStatus.configured) {
     return NextResponse.json(
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
       data: {
         people: await listPeople(),
         messageHistory: await listMessageHistory(),
-        twilio: getTwilioConfigStatus(),
+        twilio: getMailchimpConfigStatus(),
         currentUserName: currentUser?.name ?? 'Admin',
       },
     },

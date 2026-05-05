@@ -9,7 +9,7 @@ import {
   listPeople,
 } from '@/lib/adminStore';
 import { PersonType } from '@/lib/adminTypes';
-import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
+import { getMailchimpConfigStatus } from '@/lib/mailchimpMessaging';
 
 const PHONE_NUMBER_PATTERN = /^\+[1-9]\d{7,14}$/;
 
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     data: {
       people: await listPeople(),
       messageHistory: await listMessageHistory(),
-      twilio: getTwilioConfigStatus(),
+      twilio: getMailchimpConfigStatus(),
       currentUserName: currentUser?.name ?? 'Admin',
     },
   });
@@ -85,7 +85,7 @@ export async function DELETE(request: Request) {
     data: {
       people: await listPeople(),
       messageHistory: await listMessageHistory(),
-      twilio: getTwilioConfigStatus(),
+      twilio: getMailchimpConfigStatus(),
       currentUserName: currentUser?.name ?? 'Admin',
     },
   });

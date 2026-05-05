@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { getCurrentAdminUser, isAdminAuthenticated } from '@/lib/adminAuth';
 import { listMessageHistory, listPeople } from '@/lib/adminStore';
-import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
+import { getMailchimpConfigStatus } from '@/lib/mailchimpMessaging';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +18,7 @@ export async function GET() {
     data: {
       people: await listPeople(),
       messageHistory: await listMessageHistory(),
-      twilio: getTwilioConfigStatus(),
+      twilio: getMailchimpConfigStatus(),
       currentUserName: currentUser?.name ?? 'Admin',
     },
   });

@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+*.pnp
+.pnp.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Next.js
+/.next/
+/out/
+.next/
+build/
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+.directory
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+*.iml
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Database files
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+data/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# macOS
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+.vs/

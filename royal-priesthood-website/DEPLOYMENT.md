@@ -117,12 +117,13 @@ royal-priesthood-website/
 │   ├── adminAuth.ts             # Cookie-based admin auth helpers
 │   ├── adminStore.ts            # SQLite people/message store
 │   ├── adminTypes.ts            # Shared portal types
-│   └── twilioMessaging.ts       # Vonage SMS integration
+│   ├── mailchimpMessaging.ts    # Mailchimp SMS integration
+│   └── twilioMessaging.ts       # (Legacy) Vonage SMS integration
 ├── public/
 │   └── data/
 │       ├── weeks.json           # All 8 weeks content
 │       └── characters.json      # All 20 Bible characters
-├── .env.example                 # Required admin, SQLite, and Vonage variables
+├── .env.example                 # Required admin, SQLite, and Mailchimp variables
 ├── package.json
 ├── tsconfig.json
 ├── tailwind.config.ts
@@ -167,7 +168,7 @@ Edit `public/data/characters.json` — add characters with name, category, and r
 The public site still works without extra configuration, but the `/admin` portal and SMS features require environment variables.
 
 1. Copy `.env.example` to `.env.local`
-2. Fill in your admin and Vonage values
+2. Fill in your admin and Mailchimp values
 3. For Vercel, add the same variables in the project settings under "Environment Variables"
 
 ### Required for Admin Portal
@@ -177,15 +178,14 @@ ADMIN_PASSWORD=Golois
 ADMIN_SESSION_SECRET=replace-with-a-long-random-secret
 ```
 
-### Required for Vonage SMS
+### Required for Mailchimp SMS
 ```bash
-VONAGE_API_KEY=your-vonage-api-key
-VONAGE_API_SECRET=your-vonage-api-secret
-VONAGE_FROM=your-vonage-sender
+MAILCHIMP_API_KEY=your-mailchimp-api-key
+MAILCHIMP_SMS_FROM=your-sender-name
 ```
 
 Notes:
-- SMS sending will not work until all required Vonage variables are set.
+- SMS sending will not work until all required Mailchimp variables are set.
 - The admin portal is available at `/admin` and is intentionally not linked in the public navigation.
 
 ---

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getCurrentAdminUser, isAdminAuthenticated } from '@/lib/adminAuth';
 import { listMessageHistory, listPeople, upsertPerson } from '@/lib/adminStore';
 import { PersonType } from '@/lib/adminTypes';
-import { getTwilioConfigStatus } from '@/lib/twilioMessaging';
+import { getMailchimpConfigStatus } from '@/lib/mailchimpMessaging';
 
 const E164_PHONE_PATTERN = /^\+[1-9]\d{7,14}$/;
 
@@ -143,7 +143,7 @@ export async function POST(request: Request) {
     data: {
       people: await listPeople(),
       messageHistory: await listMessageHistory(),
-      twilio: getTwilioConfigStatus(),
+      twilio: getMailchimpConfigStatus(),
       currentUserName: (await getCurrentAdminUser())?.name ?? 'Admin',
     },
   });
